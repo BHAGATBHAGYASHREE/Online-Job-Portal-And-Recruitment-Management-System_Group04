@@ -23,7 +23,7 @@ function Post({ id, author, like, comment, description, image, createdAt }) {
   let [showComment, setShowComment] = useState(false);
   const handleLike = async () => {
     try {
-      let result = await axios.get(`/api/post/like/${id}`, {
+      let result = await axios.get(`https://linkedin-6id0.onrender.com/api/post/like/${id}`, {
         withCredentials: true,
       });
       setLikes(result.data.like);
@@ -35,7 +35,7 @@ function Post({ id, author, like, comment, description, image, createdAt }) {
     e.preventDefault();
     try {
       let result = await axios.post(
-        serverUrl + `/api/post/comment/${id}`,
+        serverUrl + `https://linkedin-6id0.onrender.com/api/post/comment/${id}`,
         {
           content: commentContent,
         },
