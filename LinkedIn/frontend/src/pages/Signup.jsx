@@ -21,7 +21,7 @@ function Signup() {
     e.preventDefault()
     setLoading(true)
     try {
-      let result = await axios.post(`${serverUrl}/api/auth/login`,{
+      let result = await axios.post(`${serverUrl}/api/auth/signup`,{
 firstName,
 lastName,
 userName,
