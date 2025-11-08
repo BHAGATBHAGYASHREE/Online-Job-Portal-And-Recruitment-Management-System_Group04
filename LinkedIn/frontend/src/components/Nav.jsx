@@ -19,7 +19,7 @@ let [searchInput,setSearchInput]=useState("")
 let [searchData,setSearchData]=useState([])
 const handleSignOut=async ()=>{
     try {
-        let result =await axios.get("/api/auth/logout",{withCredentials:true})
+        let result =await axios.get("https://linkedin-6id0.onrender.com/api/auth/logout",{withCredentials:true})
         setUserData(null)
         navigate("/login")
         console.log(result);
