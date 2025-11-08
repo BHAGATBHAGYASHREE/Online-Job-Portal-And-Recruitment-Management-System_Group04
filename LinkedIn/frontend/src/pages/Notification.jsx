@@ -12,7 +12,7 @@ let [notificationData,setNotificationData]=useState([])
 let {userData}=useContext(userDataContext)
 const handleGetNotification=async ()=>{
     try {
-        let result=await axios.get("/api/notification/get",{withCredentials:true})
+        let result=await axios.get(`${serverUrl}/api/auth/login`,{withCredentials:true})
         setNotificationData(result.data)
     } catch (error) {
         console.log(error)
