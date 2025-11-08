@@ -37,7 +37,7 @@ async function handleUploadPost(){
     if(backendImage){
       formdata.append("image",backendImage)
     }
-let result=await axios.post("/api/post/create",formdata,{withCredentials:true})
+let result=await axios.post("https://linkedin-6id0.onrender.com/api/post/create",formdata,{withCredentials:true})
 console.log(result)
 setPosting(false)
 setUploadPost(false)
