@@ -31,7 +31,7 @@ class _RecruiterDashboardState extends State<RecruiterDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Recruiter Dashboard')),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Navigator.push(
             context,
@@ -39,7 +39,9 @@ class _RecruiterDashboardState extends State<RecruiterDashboard> {
           );
           _refreshJobs();
         },
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: const Text('Post New Job'),
+        backgroundColor: Colors.blueAccent,
       ),
       body: FutureBuilder<List<JobModel>>(
         future: _myJobsFuture,
@@ -47,22 +49,32 @@ class _RecruiterDashboardState extends State<RecruiterDashboard> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No jobs posted yet.'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.work_off_outlined, size: 80, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text('No jobs posted yet.', style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+                ],
+              ),
+            );
           }
 
           final jobs = snapshot.data!;
           return ListView.builder(
+            padding: const EdgeInsets.all(12),
             itemCount: jobs.length,
             itemBuilder: (context, index) {
               final job = jobs[index];
               return Card(
-                margin: const EdgeInsets.all(8.0),
-                child: ListTile(
-                  title: Text(job.title),
-                  subtitle: Text(job.company),
-                  trailing: const Icon(Icons.chevron_right),
+                elevation: 3,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(15),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -71,6 +83,54 @@ class _RecruiterDashboardState extends State<RecruiterDashboard> {
                       ),
                     );
                   },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                job.title,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined, color: Colors.blueAccent),
+                              onPressed: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => CreateJobScreen(existingJob: job),
+                                  ),
+                                );
+                                _refreshJobs();
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          job.company,
+                          style: TextStyle(fontSize: 15, color: Colors.blueAccent, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Text(job.location, style: const TextStyle(color: Colors.grey)),
+                            const Spacer(),
+                            const Icon(Icons.people_outline, size: 16, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Text('${job.applicants.length} Applicants', style: const TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               );
             },

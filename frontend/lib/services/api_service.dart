@@ -201,6 +201,35 @@ class ApiService {
     }
   }
 
+  Future<JobModel> updateJob(JobModel job) async {
+    final token = await _getToken();
+    if (token == null) throw Exception('No token found');
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/jobs/update/${job.id}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'title': job.title,
+        'description': job.description,
+        'company': job.company,
+        'location': job.location,
+        'salary': job.salary,
+        'requirements': job.requirements,
+        'contactName': job.contactName,
+        'contactEmail': job.contactEmail,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return JobModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to update job: ${response.body}');
+    }
+  }
+
   // --- Applications ---
 
   Future<void> applyForJob(String jobId) async {
