@@ -301,4 +301,53 @@ class ApiService {
        throw Exception('Failed to update status');
     }
   }
+
+  Future<void> deleteJob(String jobId) async {
+    final token = await _getToken();
+    if (token == null) throw Exception('No token found');
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/jobs/delete/$jobId'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete job: ${response.body}');
+    }
+  }
+
+  Future<void> withdrawApplication(String applicationId) async {
+    final token = await _getToken();
+    if (token == null) throw Exception('No token found');
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/applications/withdraw/$applicationId'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to withdraw application: ${response.body}');
+    }
+  }
+
+  Future<Map<String, dynamic>> getRecruiterStats() async {
+    final token = await _getToken();
+    if (token == null) throw Exception('No token found');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/jobs/stats'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to fetch analytics');
+    }
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+  }
 }

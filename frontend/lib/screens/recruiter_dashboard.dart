@@ -3,6 +3,8 @@ import '../services/api_service.dart';
 import '../models/job_model.dart';
 import 'create_job_screen.dart';
 import 'job_applications_screen.dart';
+import 'analytics_screen.dart';
+import 'welcome_screen.dart';
 
 class RecruiterDashboard extends StatefulWidget {
   const RecruiterDashboard({super.key});
@@ -21,16 +23,77 @@ class _RecruiterDashboardState extends State<RecruiterDashboard> {
     _refreshJobs();
   }
 
+  Future<void> _logout() async {
+    await _apiService.logout();
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+        (route) => false,
+      );
+    }
+  }
+
   void _refreshJobs() {
     setState(() {
       _myJobsFuture = _apiService.getMyJobs();
     });
   }
 
+  Future<void> _confirmDelete(String jobId) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Job'),
+        content: const Text('Are you sure you want to delete this job? This action cannot be undone.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await _apiService.deleteJob(jobId);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Job deleted successfully')));
+          _refreshJobs();
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recruiter Dashboard')),
+      appBar: AppBar(
+        title: const Text('Recruiter Dashboard'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart_outlined),
+            tooltip: 'Hiring Analytics',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AnalyticsScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: _logout,
+          )
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Navigator.push(
@@ -108,6 +171,10 @@ class _RecruiterDashboardState extends State<RecruiterDashboard> {
                                 );
                                 _refreshJobs();
                               },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                              onPressed: () => _confirmDelete(job.id),
                             ),
                           ],
                         ),

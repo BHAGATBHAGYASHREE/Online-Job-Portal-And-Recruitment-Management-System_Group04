@@ -146,7 +146,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _salaryController,
-                    decoration: _buildInputDecoration('Salary (e.g. \$50k - \$70k)', Icons.payments_outlined),
+                    decoration: _buildInputDecoration(r'Salary (e.g. $50k - $70k)', Icons.payments_outlined),
                     validator: (value) => value!.isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 16),
