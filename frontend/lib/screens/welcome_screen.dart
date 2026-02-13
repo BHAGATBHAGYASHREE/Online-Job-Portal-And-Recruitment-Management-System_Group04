@@ -8,8 +8,8 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20), //Left + Right spacing.
+        width: double.infinity, // Take full screen width.
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
